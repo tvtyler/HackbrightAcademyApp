@@ -1,0 +1,15 @@
+certifi==2023.7.22
+charset-normalizer==3.2.0
+click==8.0.1
+Flask==2.0.1
+Flask-SQLAlchemy==2.5.1
+greenlet==2.0.2
+idna==3.4
+itsdangerous==2.0.1
+Jinja2==3.0.1
+MarkupSafe==2.0.1
+psycopg2-binary==2.9.3
+requests==2.31.0
+SQLAlchemy==1.4.18
+urllib3==2.0.4
+Werkzeug==2.0.1
