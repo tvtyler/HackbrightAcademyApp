@@ -1,40 +1,50 @@
 """Server for Teamfight Tactics app."""
 
-from flask import Flask
 from flask import (Flask, render_template, request, flash, session,
-                   redirect)
+                   redirect, jsonify)
 from model import connect_to_db, db
 from jinja2 import StrictUndefined
 import crud, requests, os
+import requests
 
 app = Flask(__name__)
 app.secret_key = "dev"
 app.jinja_env.undefined = StrictUndefined
 
-#API info
+
+#API key from secrets file
 api_key = os.environ.get('API_KEY')
-routing_value = os.environ.get('ROUTING_VALUE')
 
 #routes
 #REMEMBER TO UPDATE GET/POST AS NEEDED
+
+@app.route('/api/proxy', methods=['GET'])
+def riot_api_proxy():
+    proxy_url = request.args.get('url')
+
+    headers = {
+        "X-Riot-Token": api_key #riot specific header
+    }
+
+    try:
+        response = requests.get(proxy_url, headers=headers)
+        return jsonify(response.json()), response.status_code
+
+    except requests.exceptions.RequestException as e:
+        return jsonify({"error": "Failed to proxy the request", "details": str(e)}), 500
+
+
 @app.route('/')
 def homepage():
-    """Show homepage"""
-
+    """Show homepage with search form"""
+    
     return render_template("homepage.html")
 
-@app.route('/characters')
+@app.route('/player-details')
 def show_characters():
-    """Show characters that you want to see the best items for"""
+    """Show a players details"""
     
-
-    return render_template("characters.html")
-
-@app.route('/item/<id>')
-def show_character_items(id):
-    """A page for showing a characters best items"""
-
-    return render_template("character_items.html")
+    return render_template("player-details.html")
 
 if __name__ == "__main__":
     connect_to_db(app)
