@@ -9,9 +9,6 @@ db = SQLAlchemy()
 class Player(db.Model):
     """A player"""
 
-    #Could need changed later, not sure if player is needed since we only
-    #require number of games on an augment, not the players that played them.
-
     __tablename__ = "players"
 
     player_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
@@ -31,8 +28,6 @@ class Character(db.Model):
     
     traits = db.relationship("Trait", secondary="character_traits", back_populates="characters")
     items = db.relationship("Item", secondary="character_item", back_populates="characters")
-    character1_pairings = db.relationship("CharacterPairing", foreign_keys="[CharacterPairing.character1_id]", back_populates="character1") #unsure of
-    character2_pairings = db.relationship("CharacterPairing", foreign_keys="[CharacterPairing.character2_id]", back_populates="character2")
 
     def __repr__(self):
         return f"<Character character_id={self.character_id} character name={self.character_name}>"
@@ -62,6 +57,54 @@ class Item(db.Model):
     def __repr__(self):
         return f"<Item item_id={self.item_id} item name={self.item_name}>"
     
+#NEW TABLES CHECK SAT
+
+class AveragePlacement(db.Model):
+    """Average placement of a player in their last 10 games"""
+
+    __tablename__ = "average_placements"
+
+    id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    player_id = db.Column(db.Integer, db.ForeignKey('players.player_id'))
+    placement = db.Column(db.Float)  # Assuming this is a float value
+    
+    player = db.relationship("Player", backref="average_placements")
+
+    def __repr__(self):
+        return f"<AveragePlacement id={self.id} player_id={self.player_id} placement={self.placement}>"
+
+
+class MatchHistory(db.Model):
+    """Match history of a player"""
+
+    __tablename__ = "match_history"
+
+    id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    player_id = db.Column(db.Integer, db.ForeignKey('players.player_id'))
+    match_id = db.Column(db.String)  #store match IDs as strings
+    placement = db.Column(db.Integer)  
+    date_played = db.Column(db.DateTime)
+
+    player = db.relationship("Player", backref="match_history")
+
+    def __repr__(self):
+        return f"<MatchHistory id={self.id} player_id={self.player_id} match_id={self.match_id} placement={self.placement}>"
+
+
+class MatchDetails(db.Model):
+    """Details of individual matches"""
+
+    __tablename__ = "match_details"
+
+    id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    match_id = db.Column(db.String, db.ForeignKey('match_history.match_id'))
+    # Add additional fields for champions, items, and outcome
+
+    match = db.relationship("MatchHistory", backref="match_details")
+
+    def __repr__(self):
+        return f"<MatchDetails id={self.id} match_id={self.match_id}>"
+
     
 #Association tables from data model for many to many relationships
 
@@ -79,25 +122,6 @@ class Character_item(db.Model):
 
     def __repr__(self):
         return f"<Character_item_id={self.character_item_id} character_id={self.character_id} item_id={self.item_id}>"
-
-class CharacterPairing(db.Model):
-    """Association table to establish a many-to-many relationship between Characters."""
-
-    #come back to after MVP
-    __tablename__ = "character_pairings"
-
-    pair_id = db.Column(db.Integer, primary_key = True) #changed from id to pair_id
-    character1_id = db.Column(db.Integer, db.ForeignKey("characters.character_id"))
-    character2_id = db.Column(db.Integer, db.ForeignKey("characters.character_id"))
-    play_rate = db.Column(db.Float)
-    win_rate = db.Column(db.Float)
-
-    #should work even if character1 has multiple synergies, as the table will account for that
-    character1 = db.relationship("Character", foreign_keys=[character1_id], back_populates="character1_pairings")
-    character2 = db.relationship("Character", foreign_keys=[character2_id], back_populates="character2_pairings")
-
-    def __repr__(self):
-        return f"<CharacterPairing id={self.pair_id} character1_id={self.character1_id} character2_id={self.character2_id}>"
     
 class CharacterTraits(db.Model):
     """Association table to establish a many-to-many relationship between Character and Trait."""
