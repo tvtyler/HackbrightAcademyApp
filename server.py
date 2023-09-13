@@ -11,7 +11,6 @@ app = Flask(__name__)
 app.secret_key = "dev"
 app.jinja_env.undefined = StrictUndefined
 
-
 #API key from secrets file
 api_key = os.environ.get('API_KEY')
 

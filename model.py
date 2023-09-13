@@ -11,8 +11,9 @@ class Player(db.Model):
 
     __tablename__ = "players"
 
-    player_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    player_id = db.Column(db.Integer, primary_key=True)
     player_name = db.Column(db.String)
+    player_level = db.Column(db.Integer)
 
 
     def __repr__(self):
@@ -66,13 +67,12 @@ class AveragePlacement(db.Model):
 
     id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     player_id = db.Column(db.Integer, db.ForeignKey('players.player_id'))
-    placement = db.Column(db.Float)  # Assuming this is a float value
+    placement = db.Column(db.Float)  # assuming this is a float value
     
     player = db.relationship("Player", backref="average_placements")
 
     def __repr__(self):
         return f"<AveragePlacement id={self.id} player_id={self.player_id} placement={self.placement}>"
-
 
 class MatchHistory(db.Model):
     """Match history of a player"""
