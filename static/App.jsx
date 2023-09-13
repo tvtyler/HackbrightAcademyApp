@@ -2,7 +2,7 @@ function App() {
   const [playerSearch, setPlayerSearch] = React.useState("");
   const [playerData, setPlayerData] = React.useState({});
   const [rankedData, setRankedData] = React.useState({});
-  const [searchStatus, setSearchStatus] = React.useState(null);
+  const [searchStatus, setSearchStatus] = React.useState();
 
   /* Function to fetch basic player data */
   function searchForPlayer() {

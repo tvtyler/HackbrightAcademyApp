@@ -11,9 +11,10 @@ class Player(db.Model):
 
     __tablename__ = "players"
 
-    player_id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, autoincrement = True) #might need changed?
+    player_id = db.Column(db.Integer, primary_key=True) #puuid
     player_name = db.Column(db.String)
-    player_level = db.Column(db.Integer)
+    player_level = db.Column(db.Integer) 
 
 
     def __repr__(self):
@@ -24,6 +25,7 @@ class Character(db.Model):
 
     __tablename__ = "characters"
 
+    id = db.Column(db.Integer, autoincrement = True)
     character_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     character_name = db.Column(db.String)
     
@@ -37,6 +39,7 @@ class Trait(db.Model):
 
     __tablename__ = "traits"
     
+    id = db.Column(db.Integer, autoincrement = True)
     trait_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     trait_name = db.Column(db.String)
     
@@ -58,30 +61,47 @@ class Item(db.Model):
     def __repr__(self):
         return f"<Item item_id={self.item_id} item name={self.item_name}>"
     
-#NEW TABLES CHECK SAT
+#NEW TABLES
 
+#work on average placement after match history
 class AveragePlacement(db.Model):
     """Average placement of a player in their last 10 games"""
 
     __tablename__ = "average_placements"
 
     id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    player_id = db.Column(db.Integer, db.ForeignKey('players.player_id'))
+    player_id = db.Column(db.String, db.ForeignKey('players.player_id'))
     placement = db.Column(db.Float)  # assuming this is a float value
     
     player = db.relationship("Player", backref="average_placements")
 
     def __repr__(self):
         return f"<AveragePlacement id={self.id} player_id={self.player_id} placement={self.placement}>"
+    
+class Match(db.Model):
+    """Instance of a match"""
 
+    __tablename__ ="match"
+
+    id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    match_id = db.Column(db.String)
+    player_id =db.Column(db.String, db.ForeignKey('players.id')) #use puuid or database id?
+    placement = db.Column(db.Integer)  
+    date_played = db.Column(db.DateTime)
+
+    player = db.relationship("Player", backref="match")
+
+    def __repr__(self):
+        return f"<MatchID id={self.id} player_id={self.player_id} match_id={self.match_id}>"
+    
 class MatchHistory(db.Model):
     """Match history of a player"""
 
     __tablename__ = "match_history"
 
     id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    player_id = db.Column(db.Integer, db.ForeignKey('players.player_id'))
-    match_id = db.Column(db.String)  #store match IDs as strings
+    player_id = db.Column(db.String, db.ForeignKey('players.id'))
+    match_id = db.Column(db.String, db.ForeignKey('match.match_id'))  #store match IDs as strings
     placement = db.Column(db.Integer)  
     date_played = db.Column(db.DateTime)
 
@@ -89,22 +109,6 @@ class MatchHistory(db.Model):
 
     def __repr__(self):
         return f"<MatchHistory id={self.id} player_id={self.player_id} match_id={self.match_id} placement={self.placement}>"
-
-
-class MatchDetails(db.Model):
-    """Details of individual matches"""
-
-    __tablename__ = "match_details"
-
-    id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    match_id = db.Column(db.String, db.ForeignKey('match_history.match_id'))
-    # Add additional fields for champions, items, and outcome
-
-    match = db.relationship("MatchHistory", backref="match_details")
-
-    def __repr__(self):
-        return f"<MatchDetails id={self.id} match_id={self.match_id}>"
-
     
 #Association tables from data model for many to many relationships
 

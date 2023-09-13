@@ -4,8 +4,7 @@ from flask import (Flask, render_template, request, flash, session,
                    redirect, jsonify)
 from model import connect_to_db, db
 from jinja2 import StrictUndefined
-import crud, requests, os
-import requests
+import crud, requests, os, api_calls
 
 app = Flask(__name__)
 app.secret_key = "dev"
@@ -31,6 +30,16 @@ def riot_api_proxy():
 
     except requests.exceptions.RequestException as e:
         return jsonify({"error": "Failed to proxy the request", "details": str(e)}), 500
+    
+@app.route('/fetch-match/<player_id>', methods=['GET'])
+def fetch_match_info(player_id):
+
+    match_ids = api_calls.fetch_match_id(player_id)
+
+    # for match in match_ids:
+        #finish
+
+    return jsonify({"message": "Match IDs fetched and stored successfully."})
 
 
 @app.route('/')
