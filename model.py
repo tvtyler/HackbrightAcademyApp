@@ -15,7 +15,7 @@ class Player(db.Model):
     player_id = db.Column(db.String, unique=True, primary_key=True) #puuid
     player_name = db.Column(db.String)
     player_level = db.Column(db.Integer)
-    player_rank = db.Column(db.String)
+    # player_rank = db.Column(db.String)
 
     match = db.relationship("Match", backref="players")
 
@@ -91,7 +91,7 @@ class Match(db.Model):
     placement = db.Column(db.Integer)  
     date_played = db.Column(db.DateTime)
 
-    player = db.relationship("Player", backref="match")
+    # player = db.relationship("Player", backref="match")
 
     def __repr__(self):
         return f"<MatchID id={self.id} player_id={self.player_id} match_id={self.match_id}>"
@@ -140,7 +140,7 @@ class CharacterTraits(db.Model):
     def __repr__(self):
         return f"<CharacterTraits character_id={self.character_id} trait_id={self.trait_id}>"
 
-def connect_to_db(flask_app, db_uri="postgresql:///teamfight_tactics", echo=True):
+def connect_to_db(flask_app, db_uri="postgresql:///Teamfight_Tactics", echo=True):
     flask_app.config["SQLALCHEMY_DATABASE_URI"] = db_uri
     flask_app.config["SQLALCHEMY_ECHO"] = echo
     flask_app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False

@@ -6,6 +6,10 @@ from jinja2 import StrictUndefined
 import crud, requests
 from datetime import datetime
 from api_calls import fetch_match_id
+import model
+
+os.system("dropdb Teamfight_Tactics")
+os.system("createdb Teamfight_Tactics")
 
 app = Flask(__name__)
 app.secret_key = "dev"
@@ -35,23 +39,33 @@ def riot_api_proxy():
 @app.route('/player_details', methods = ['POST'])
 def get_puuid():
     # #will have to add rank later through another api request in app.jsx
-    # player_details = requests.get_json()
-    
-    # player_data_db = []
-
-    # crud.create_player(player_details)
-
     try:
         data = request.get_json()
+    
         puuid = data['puuid']
-        
+        level = data["summonerLevel"]
+        name = data["name"]
+
+        player = crud.create_player(puuid, level, name)
+        model.db.session.add(player)
+        model.db.session.commit()
+
         return jsonify({"message": "Data received successfully"})
     except Exception as e:
-        return None
+        #helps for identifying what error i'm receiving
+        return jsonify({"error": str(e)})
+
+@app.route('/get_players', methods=['GET'])
+def get_players():
+    players = crud.get_all_players()  # Implement a function to retrieve all players
+    #testing whether i've stored the players in the database
+    player_data = [{"puuid": player.player_id, "level": player.player_level, "name": player.player_name} for player in players]
+    return jsonify(player_data)
 
 @app.route('/get_matches/<player_id>', methods=['GET'])
 def fetch_match_info(player_id):
     
+    #coming back as none
     matches = fetch_match_id(player_id)
 
     matches_in_db = []
@@ -67,6 +81,8 @@ def fetch_match_info(player_id):
     db_match = crud.create_match(match_id, player_id, placement, date_played)
     matches_in_db.append(db_match)
 
+    model.db.session.add_all(matches_in_db)
+    model.db.session.commit()
 
     return None
 

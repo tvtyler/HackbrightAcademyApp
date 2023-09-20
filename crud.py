@@ -2,12 +2,15 @@ from model import db, Player, Character, Trait, Item, Character_item, Match, Mat
 
 #create operations
 
-def create_player(player_name):
-    new_player = Player(player_name=player_name)
-    db.session.add(new_player)
-    db.session.commit()
+def create_player(player_id, summoner_level, name):
+        
+    player = Player(
+        player_id = player_id,
+        player_level = summoner_level,
+        player_name = name
+    )
 
-    return new_player
+    return player
 
 def create_character(character_name):
     new_character = Character(character_name=character_name)
