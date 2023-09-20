@@ -1,4 +1,4 @@
-from model import db, Player, Character, Trait, Item, Character_item, connect_to_db #will need to import pairings/charactertraits later
+from model import db, Player, Character, Trait, Item, Character_item, Match, MatchHistory, connect_to_db #will need to import pairings/charactertraits later
 
 #create operations
 
@@ -29,6 +29,17 @@ def create_item(item_name):
     db.session.commit()
 
     return new_item
+
+def create_match(match_id, player_id, placement, date_played):
+        
+    match = Match(
+        match_id = match_id,
+        player_id = player_id,
+        placement = placement,
+        date_played = date_played
+    )
+
+    return match
 
 
 #will need to add the other many-to-many relationships later

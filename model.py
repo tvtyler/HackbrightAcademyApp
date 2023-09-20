@@ -11,11 +11,13 @@ class Player(db.Model):
 
     __tablename__ = "players"
 
-    id = db.Column(db.Integer, autoincrement = True) #might need changed?
-    player_id = db.Column(db.Integer, primary_key=True) #puuid
+    # id = db.Column(db.Integer, autoincrement = True)
+    player_id = db.Column(db.String, unique=True, primary_key=True) #puuid
     player_name = db.Column(db.String)
-    player_level = db.Column(db.Integer) 
+    player_level = db.Column(db.Integer)
+    player_rank = db.Column(db.String)
 
+    match = db.relationship("Match", backref="players")
 
     def __repr__(self):
         return f"<Player player_id={self.player_id} player name={self.player_name}>"
@@ -71,7 +73,7 @@ class AveragePlacement(db.Model):
 
     id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     player_id = db.Column(db.String, db.ForeignKey('players.player_id'))
-    placement = db.Column(db.Float)  # assuming this is a float value
+    placement = db.Column(db.Float)  # assuming this is a float value not sure yet
     
     player = db.relationship("Player", backref="average_placements")
 
@@ -84,8 +86,8 @@ class Match(db.Model):
     __tablename__ ="match"
 
     id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    match_id = db.Column(db.String)
-    player_id =db.Column(db.String, db.ForeignKey('players.id')) #use puuid or database id?
+    match_id = db.Column(db.String, unique=True)
+    player_id = db.Column(db.String, db.ForeignKey('players.player_id'))
     placement = db.Column(db.Integer)  
     date_played = db.Column(db.DateTime)
 
@@ -100,10 +102,8 @@ class MatchHistory(db.Model):
     __tablename__ = "match_history"
 
     id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    player_id = db.Column(db.String, db.ForeignKey('players.id'))
+    player_id = db.Column(db.String, db.ForeignKey('players.player_id'))
     match_id = db.Column(db.String, db.ForeignKey('match.match_id'))  #store match IDs as strings
-    placement = db.Column(db.Integer)  
-    date_played = db.Column(db.DateTime)
 
     player = db.relationship("Player", backref="match_history")
 

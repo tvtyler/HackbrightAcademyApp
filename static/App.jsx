@@ -6,10 +6,31 @@ function App() {
 
   /* Function to fetch basic player data */
   function searchForPlayer() {
-    const PROXY_URL =
-      "/api/proxy?url=https://na1.api.riotgames.com/tft/summoner/v1/summoners/by-name/" +
-      playerSearch;
+    const PROXY_URL = "/api/proxy?url=https://na1.api.riotgames.com/tft/summoner/v1/summoners/by-name/" + playerSearch;
 
+  function sendPlayerData(playerData) {
+    const playerDetailsURL = '/player_details';
+        const pData = {
+          puuid: playerData.puuid,
+          summonerLevel: playerData.summonerLevel,
+          name: playerData.name 
+         };
+         console.log(pData)
+        fetch(playerDetailsURL, {
+            method: 'POST',
+            body: JSON.stringify(pData),
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+          .then((response) => {
+              if (response.ok) {
+                  console.log('Data sent to the backend');
+              } else {
+                  console.error('Failed to send puuid');
+              }
+          })
+  }
     fetch(PROXY_URL)
       .then((response) => {
         if (response.ok) {
@@ -24,13 +45,14 @@ function App() {
         console.log(data);
         setPlayerData(data);
         setSearchStatus('Player Found');
+        // could make another api call, now that you have the puuid
+        sendPlayerData(data);
       })
       .catch((error) => {
         console.error('Fetch error:', error);
         setSearchStatus('Player Not Found');
       });
   }
-
   /* Use useEffect to fetch ranked data after the initial render, had problems before using useEffect. */
   React.useEffect(() => {
     if (playerData.id) {
