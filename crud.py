@@ -1,4 +1,4 @@
-from model import db, Player, Character, Trait, Item, Character_item, Match, MatchHistory, connect_to_db #will need to import pairings/charactertraits later
+from model import db, Player, Character, Trait, Item, Character_item, Match, Player_matches, connect_to_db #will need to import pairings/charactertraits later
 
 #create operations
 
@@ -11,27 +11,6 @@ def create_player(player_id, summoner_level, name):
     )
 
     return player
-
-def create_character(character_name):
-    new_character = Character(character_name=character_name)
-    db.session.add(new_character)
-    db.session.commit()
-
-    return new_character
-
-def create_trait(trait_name):
-    new_trait = Trait(trait_name=trait_name)
-    db.session.add(new_trait)
-    db.session.commit()
-
-    return new_trait
-
-def create_item(item_name):
-    new_item = Item(item_name=item_name)
-    db.session.add(new_item)
-    db.session.commit()
-
-    return new_item
 
 def create_match(match_id, player_id, placement, date_played):
         

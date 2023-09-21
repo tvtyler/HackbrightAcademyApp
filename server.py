@@ -57,7 +57,7 @@ def get_puuid():
 
 @app.route('/get_players', methods=['GET'])
 def get_players():
-    players = crud.get_all_players()  # Implement a function to retrieve all players
+    players = crud.get_all_players() 
     #testing whether i've stored the players in the database
     player_data = [{"puuid": player.player_id, "level": player.player_level, "name": player.player_name} for player in players]
     return jsonify(player_data)
@@ -66,8 +66,7 @@ def get_players():
 def fetch_match_info(player_id):
     
     #coming back as none
-    matches = fetch_match_id(player_id)
-
+    matches = fetch_match_id((player_id))
     matches_in_db = []
 
     for match in matches:
@@ -76,15 +75,15 @@ def fetch_match_info(player_id):
         placement = match["info"]["participants"][0]["placement"]
         game_datetime = match["info"]["game_datetime"]
 
-    date_played = datetime.strptime(game_datetime, "%Y-%m-%d")
+        date_played = datetime.strptime(game_datetime, "%Y-%m-%d")
 
-    db_match = crud.create_match(match_id, player_id, placement, date_played)
-    matches_in_db.append(db_match)
+        db_match = crud.create_match(match_id, player_id, placement, date_played)
+        matches_in_db.append(db_match)
 
     model.db.session.add_all(matches_in_db)
     model.db.session.commit()
 
-    return None
+    return jsonify(matches_in_db)
 
 
 @app.route('/')

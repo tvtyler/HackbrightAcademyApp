@@ -4,8 +4,19 @@ from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
 
-#classes from data model
+#relationship between players and matches
+class Player_matches(db.Model):
+    """Match history of a player"""
 
+    __tablename__ = "player_match"
+
+    id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    player_id = db.Column(db.String, db.ForeignKey('players.player_id'))
+    match_id = db.Column(db.String, db.ForeignKey('match.match_id'))  #store match IDs as strings
+
+    def __repr__(self):
+        return f"<Player_matches id={self.id} player_id={self.player_id} match_id={self.match_id}>"
+    
 class Player(db.Model):
     """A player"""
 
@@ -17,11 +28,27 @@ class Player(db.Model):
     player_level = db.Column(db.Integer)
     # player_rank = db.Column(db.String)
 
-    match = db.relationship("Match", backref="players")
+    player_matches = db.relationship("Match", secondary = "player_match", backref="player")
 
     def __repr__(self):
         return f"<Player player_id={self.player_id} player name={self.player_name}>"
+    
+class Match(db.Model):
+    """Instance of a match"""
 
+    __tablename__ ="match"
+
+    id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    match_id = db.Column(db.String, unique=True)
+    player_id = db.Column(db.String)
+    placement = db.Column(db.Integer) 
+    date_played = db.Column(db.DateTime)
+
+    player_matches = db.relationship("Player", secondary = "player_match", backref="match")
+
+    def __repr__(self):
+        return f"<MatchID id={self.id} player_id={self.player_id} match_id={self.match_id}>"
+    
 class Character(db.Model):
     """A character"""
 
@@ -79,36 +106,6 @@ class AveragePlacement(db.Model):
 
     def __repr__(self):
         return f"<AveragePlacement id={self.id} player_id={self.player_id} placement={self.placement}>"
-    
-class Match(db.Model):
-    """Instance of a match"""
-
-    __tablename__ ="match"
-
-    id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    match_id = db.Column(db.String, unique=True)
-    player_id = db.Column(db.String, db.ForeignKey('players.player_id'))
-    placement = db.Column(db.Integer)  
-    date_played = db.Column(db.DateTime)
-
-    # player = db.relationship("Player", backref="match")
-
-    def __repr__(self):
-        return f"<MatchID id={self.id} player_id={self.player_id} match_id={self.match_id}>"
-    
-class MatchHistory(db.Model):
-    """Match history of a player"""
-
-    __tablename__ = "match_history"
-
-    id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    player_id = db.Column(db.String, db.ForeignKey('players.player_id'))
-    match_id = db.Column(db.String, db.ForeignKey('match.match_id'))  #store match IDs as strings
-
-    player = db.relationship("Player", backref="match_history")
-
-    def __repr__(self):
-        return f"<MatchHistory id={self.id} player_id={self.player_id} match_id={self.match_id} placement={self.placement}>"
     
 #Association tables from data model for many to many relationships
 
