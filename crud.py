@@ -12,13 +12,11 @@ def create_player(player_id, summoner_level, name):
 
     return player
 
-def create_match(match_id, player_id, placement, date_played):
+def create_match(match_id, player_id, placement):
         
     match = Match(
         match_id = match_id,
-        player_id = player_id,
         placement = placement,
-        date_played = date_played
     )
 
     return match
@@ -35,6 +33,12 @@ def get_all_players():
 
 def get_player_by_id(player_id):
     return Player.query.get(player_id)
+
+def get_all_matches():
+    return Match.query.all()
+
+def get_matches_by_player_id(player_id):
+    return Match.query.get(player_id)
 
 def get_all_characters():
     return Character.query.all()

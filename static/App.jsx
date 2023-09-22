@@ -3,10 +3,16 @@ function App() {
   const [playerData, setPlayerData] = React.useState({});
   const [rankedData, setRankedData] = React.useState({});
   const [searchStatus, setSearchStatus] = React.useState();
+  // const [searchMatch, setMatchSearch] = React.useState();
 
   /* Function to fetch basic player data */
   function searchForPlayer() {
     const PROXY_URL = "/api/proxy?url=https://na1.api.riotgames.com/tft/summoner/v1/summoners/by-name/" + playerSearch;
+
+  /* function to fetch match data */
+  // function searchForPlayersMatches() {
+  //   const PROXY_URL = "/api/proxy?url=https://americas.api.riotgames.com/tft/match/v1/matches/by-puuid/" + playerData.puuid + "/ids";
+  // }
 
   function sendPlayerData(playerData) {
     const playerDetailsURL = '/player_details';
@@ -94,9 +100,9 @@ function App() {
               ></img>
             </React.Fragment>
           )}
-          {rankedData.length > 0 ? (
+          {rankedData.length > 0 ? ( /* might need to add a link that passes match id's to python */
             <p>
-              Rank: {rankedData[0].tier} {rankedData[0].rank}
+              Rank: {rankedData[0].tier} {rankedData[0].rank} <br></br> <a href= "/match_history">View Match History</a>
             </p>
           ) : (
             <p>This player is unranked.</p>

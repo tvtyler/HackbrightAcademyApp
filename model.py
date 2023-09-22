@@ -12,7 +12,7 @@ class Player_matches(db.Model):
 
     id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     player_id = db.Column(db.String, db.ForeignKey('players.player_id'))
-    match_id = db.Column(db.String, db.ForeignKey('match.match_id'))  #store match IDs as strings
+    match_id = db.Column(db.String, db.ForeignKey('match.match_id'), unique = True)  #store match IDs as strings
 
     def __repr__(self):
         return f"<Player_matches id={self.id} player_id={self.player_id} match_id={self.match_id}>"
@@ -38,11 +38,10 @@ class Match(db.Model):
 
     __tablename__ ="match"
 
-    id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    match_id = db.Column(db.String, unique=True)
+    # id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    match_id = db.Column(db.String, unique=True, primary_key=True)
     player_id = db.Column(db.String)
     placement = db.Column(db.Integer) 
-    date_played = db.Column(db.DateTime)
 
     player_matches = db.relationship("Player", secondary = "player_match", backref="match")
 

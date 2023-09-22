@@ -62,35 +62,45 @@ def get_players():
     player_data = [{"puuid": player.player_id, "level": player.player_level, "name": player.player_name} for player in players]
     return jsonify(player_data)
 
-@app.route('/get_matches/<player_id>', methods=['GET'])
+@app.route('/store_matches/<player_id>', methods=['GET'])
 def fetch_match_info(player_id):
     
     #coming back as none
     matches = fetch_match_id((player_id))
     matches_in_db = []
-
+    
     for match in matches:
         match_id = match["metadata"]["match_id"]
-        player_id = match["info"]["participants"][0]["puuid"] 
+        player_id = match["info"]["participants"][0]["puuid"] #need to fix, getting no puuid and wrong placements
         placement = match["info"]["participants"][0]["placement"]
-        game_datetime = match["info"]["game_datetime"]
 
-        date_played = datetime.strptime(game_datetime, "%Y-%m-%d")
 
-        db_match = crud.create_match(match_id, player_id, placement, date_played)
+        db_match = crud.create_match(match_id, player_id, placement)
         matches_in_db.append(db_match)
 
     model.db.session.add_all(matches_in_db)
     model.db.session.commit()
 
-    return jsonify(matches_in_db)
+    return redirect(f'/get_matches/{player_id}')
 
+
+@app.route('/get_matches/<player_id>', methods=['GET'])
+def get_matches_from_db(player_id): #unsure how to use player_id here
+    matches = crud.get_all_matches()
+    match_data = [{"match id": match.match_id, "player id": match.player_id, "placement": match.placement}for match in matches]
+    return jsonify(match_data) 
 
 @app.route('/')
 def homepage():
     """Show homepage with search form"""
     
     return render_template("homepage.html")
+
+@app.route('/match_history')
+def match_history():
+    """show match history for that specific player"""
+
+    return render_template("match_history.html")
 
 
 if __name__ == "__main__":
