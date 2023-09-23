@@ -20,8 +20,10 @@ def create_match(match_id):
 
     return match
 
-def create_match_details(placement):
+def create_match_details(player_id, match_id, placement):
     details = Match_details(
+        player_id = player_id,
+        match_id = match_id,
         placement = placement
     )
     
@@ -44,8 +46,8 @@ def get_all_matches():
 def get_all_match_details():
     return Match_details.query.all()
 
-def get_match_details_by_id(id):
-    return Match_details.query.get(id)
+def get_match_details_by_player_id(player_id):
+    return Match_details.query.filter(Match_details.player_id == player_id).all()
 
 def get_all_characters():
     return Character.query.all()

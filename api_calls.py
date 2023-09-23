@@ -23,7 +23,8 @@ def fetch_match_id(player_id):
                 if response.status_code == 200: #append each match data object to a list
                     match_data = response.json()
                     all_matches.append(match_data)
-            return all_matches
-        else:
-            # handle request error by returning empty list
-            return []
+                    #limit the amount of matches we receive to 5, speeds up runtime by 5 seconds or so
+                    if len(all_matches) >= 5:
+                         break
+            
+        return all_matches

@@ -21,7 +21,7 @@ function App() {
           summonerLevel: playerData.summonerLevel,
           name: playerData.name 
          };
-         console.log(pData)
+         console.log(pData);
         fetch(playerDetailsURL, {
             method: 'POST',
             body: JSON.stringify(pData),
@@ -36,6 +36,27 @@ function App() {
                   console.error('Failed to send puuid');
               }
           })
+  }
+  function sendPuuid(playerData) {
+    const puuidURL = '/match_history';
+        const puuidData = {
+          puuid: playerData.puuid
+        };
+        console.log(puuidData);
+      fetch(puuidURL, {
+          method: 'POST',
+          body: JSON.stringify(puuidData),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+      })
+        .then((response) => {
+          if (response.ok) {
+            console.log('puuid sent to match history page');
+          } else {
+            console.error('failed to send puuid to match history page')
+          }
+        })
   }
     fetch(PROXY_URL)
       .then((response) => {
@@ -53,6 +74,7 @@ function App() {
         setSearchStatus('Player Found');
         // could make another api call, now that you have the puuid
         sendPlayerData(data);
+        sendPuuid(data);
       })
       .catch((error) => {
         console.error('Fetch error:', error);
@@ -102,7 +124,7 @@ function App() {
           )}
           {rankedData.length > 0 ? ( /* might need to add a link that passes match id's to python */
             <p>
-              Rank: {rankedData[0].tier} {rankedData[0].rank} <br></br> <a href= "/match_history">View Match History</a>
+              Rank: {rankedData[0].tier} {rankedData[0].rank} <br></br> <a href= "/match_history" >View Match History</a>
             </p>
           ) : (
             <p>This player is unranked.</p>
