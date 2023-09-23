@@ -5,17 +5,20 @@ from flask_sqlalchemy import SQLAlchemy
 db = SQLAlchemy()
 
 #relationship between players and matches
-class Player_matches(db.Model):
+class Match_details(db.Model):
     """Match history of a player"""
 
-    __tablename__ = "player_match"
+    __tablename__ = "match_details"
 
     id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     player_id = db.Column(db.String, db.ForeignKey('players.player_id'))
-    match_id = db.Column(db.String, db.ForeignKey('match.match_id'), unique = True)  #store match IDs as strings
+    match_id = db.Column(db.String, db.ForeignKey('match.match_id')) #unique? #store match IDs as strings
+    placement = db.Column(db.Integer)
 
+    match = db.relationship("Match", back_populates="match_details")
+    players = db.relationship("Player", back_populates="player_details")
     def __repr__(self):
-        return f"<Player_matches id={self.id} player_id={self.player_id} match_id={self.match_id}>"
+        return f"<match_details id={self.id} player_id={self.player_id} match_id={self.match_id}>"
     
 class Player(db.Model):
     """A player"""
@@ -28,7 +31,7 @@ class Player(db.Model):
     player_level = db.Column(db.Integer)
     # player_rank = db.Column(db.String)
 
-    player_matches = db.relationship("Match", secondary = "player_match", backref="player")
+    player_details = db.relationship("Match_details", back_populates="players")
 
     def __repr__(self):
         return f"<Player player_id={self.player_id} player name={self.player_name}>"
@@ -40,10 +43,8 @@ class Match(db.Model):
 
     # id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     match_id = db.Column(db.String, unique=True, primary_key=True)
-    player_id = db.Column(db.String)
-    placement = db.Column(db.Integer) 
 
-    player_matches = db.relationship("Player", secondary = "player_match", backref="match")
+    match_details = db.relationship("Match_details", back_populates="match")
 
     def __repr__(self):
         return f"<MatchID id={self.id} player_id={self.player_id} match_id={self.match_id}>"

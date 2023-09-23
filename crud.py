@@ -1,4 +1,4 @@
-from model import db, Player, Character, Trait, Item, Character_item, Match, Player_matches, connect_to_db #will need to import pairings/charactertraits later
+from model import db, Player, Character, Trait, Item, Character_item, Match, Match_details, connect_to_db #will need to import pairings/charactertraits later
 
 #create operations
 
@@ -12,16 +12,20 @@ def create_player(player_id, summoner_level, name):
 
     return player
 
-def create_match(match_id, player_id, placement):
+def create_match(match_id):
         
     match = Match(
         match_id = match_id,
-        placement = placement,
     )
 
     return match
 
-
+def create_match_details(placement):
+    details = Match_details(
+        placement = placement
+    )
+    
+    return details
 #will need to add the other many-to-many relationships later
 
 
@@ -37,8 +41,11 @@ def get_player_by_id(player_id):
 def get_all_matches():
     return Match.query.all()
 
-def get_matches_by_player_id(player_id):
-    return Match.query.get(player_id)
+def get_all_match_details():
+    return Match_details.query.all()
+
+def get_match_details_by_id(id):
+    return Match_details.query.get(id)
 
 def get_all_characters():
     return Character.query.all()

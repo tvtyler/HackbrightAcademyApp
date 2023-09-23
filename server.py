@@ -65,29 +65,37 @@ def get_players():
 @app.route('/store_matches/<player_id>', methods=['GET'])
 def fetch_match_info(player_id):
     
-    #coming back as none
+    #fetches all info from last 10 matches
     matches = fetch_match_id((player_id))
     matches_in_db = []
-    
+    match_details_db = []
+
     for match in matches:
+        puuid_index = match["metadata"]["participants"].index(player_id)
+
         match_id = match["metadata"]["match_id"]
-        player_id = match["info"]["participants"][0]["puuid"] #need to fix, getting no puuid and wrong placements
-        placement = match["info"]["participants"][0]["placement"]
+        placement = match["info"]["participants"][puuid_index]["placement"]
+        
 
-
-        db_match = crud.create_match(match_id, player_id, placement)
+        db_match = crud.create_match(match_id)
+        match_details = crud.create_match_details(placement) #arguments?
+        match_details.player_id=player_id
+        match_details.match_id=match_id
         matches_in_db.append(db_match)
+        match_details_db.append(match_details)
 
+    model.db.session.add_all(match_details_db)
     model.db.session.add_all(matches_in_db)
     model.db.session.commit()
-
+    
     return redirect(f'/get_matches/{player_id}')
 
 
 @app.route('/get_matches/<player_id>', methods=['GET'])
 def get_matches_from_db(player_id): #unsure how to use player_id here
-    matches = crud.get_all_matches()
-    match_data = [{"match id": match.match_id, "player id": match.player_id, "placement": match.placement}for match in matches]
+    matches = crud.get_all_match_details() #changed to details
+    player_name = crud.get_player_by_id(player_id).player_name
+    match_data = [{"match id": match.match_id, "player id": match.player_id, "placement": match.placement, "Name": player_name}for match in matches]
     return jsonify(match_data) 
 
 @app.route('/')
