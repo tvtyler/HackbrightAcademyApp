@@ -127,19 +127,22 @@ def homepage():
     
     return render_template("homepage.html")
 
-@app.route('/match_history', methods = ['POST', 'GET'])
-def match_history():
+@app.route('/match_history/<string:puuid>', methods = ['POST', 'GET'])
+def match_history(puuid):
     """show match history for that specific player"""
-    if request.method == 'POST':
-        try:
-            data = request.get_json()
-            puuid = data['puuid']
-            player_info = crud.get_player_by_id(puuid) #referenced before assignment error
-            return jsonify({"message": "Data received successfully ", "Puuid": puuid})
-        except Exception as e:
-            return jsonify({"error": str(e)})
-        
-    return render_template("match_history.html", pinfo = player_info)
+    # if request.method == 'POST':
+    #     try:
+    #         data = request.get_json()
+    #         puuid = data['puuid']
+    #         player_info = crud.get_player_by_id(puuid) #referenced before assignment error
+    #         return jsonify({"message": "Data received successfully ", "Puuid": puuid})
+    #     except Exception as e:
+    #         return jsonify({"error": str(e)})
+    # else:
+    player = crud.get_player_by_id(puuid)
+    matches = crud.get_match_details_by_player_id(puuid)
+
+    return render_template("match_history.html", player = player, matches = matches)
 
 
 if __name__ == "__main__":
