@@ -45,8 +45,9 @@ def get_puuid():
         puuid = data['puuid']
         level = data["summonerLevel"]
         name = data["name"]
+        icon = data['icon']
 
-        player = crud.create_player(puuid, level, name)
+        player = crud.create_player(puuid, level, name, icon)
         model.db.session.add(player)
         model.db.session.commit()
 
@@ -78,41 +79,32 @@ def get_puuid():
         #helps for identifying what error i'm receiving
         return jsonify({"error": str(e)})
 
+@app.route('/rank_details', methods=["POST"])
+def rank_details():
+    try:
+        data = request.get_json()
+
+        puuid = data['puuid']
+        rank = data['rank']
+
+        player = crud.get_player_by_id(puuid)
+        player.player_rank = rank
+        #session add?
+        db.session.commit()
+
+        return jsonify({"message": "Rank received successfully"})
+    except Exception as e:
+        #helps for identifying what error i'm receiving
+        return jsonify({"error": str(e)})
+
+
+
 @app.route('/get_players', methods=['GET'])
 def get_players():
     players = crud.get_all_players() 
     #testing whether i've stored the players in the database
     player_data = [{"puuid": player.player_id, "level": player.player_level, "name": player.player_name} for player in players]
     return jsonify(player_data)
-
-################################################################## NOT NEEDED
-# @app.route('/store_matches/<player_id>', methods=['GET'])
-# def fetch_match_info(player_id):
-    
-#     #fetches all info from last 10 matches
-#     matches = fetch_match_id((player_id))
-#     matches_in_db = []
-#     match_details_db = []
-#     player = crud.get_player_by_id(player_id)
-#     for match in matches:
-#         puuid_index = match["metadata"]["participants"].index(player_id)
-
-#         match_id = match["metadata"]["match_id"]
-#         placement = match["info"]["participants"][puuid_index]["placement"]
-        
-
-#         db_match = crud.create_match(match_id)
-#         match_details = crud.create_match_details(player_id, match_id, placement) #arguments?
-#         match_details.players = player
-#         matches_in_db.append(db_match)
-#         match_details_db.append(match_details)
-
-#     model.db.session.add_all(match_details_db)
-#     model.db.session.add_all(matches_in_db)
-#     model.db.session.commit()
-    
-#     return redirect(f'/get_matches/{player_id}')
-###################################################################
 
 @app.route('/get_matches/<player_id>', methods=['GET'])
 def get_matches_from_db(player_id): #unsure how to use player_id here
@@ -130,19 +122,13 @@ def homepage():
 @app.route('/match_history/<string:puuid>', methods = ['POST', 'GET'])
 def match_history(puuid):
     """show match history for that specific player"""
-    # if request.method == 'POST':
-    #     try:
-    #         data = request.get_json()
-    #         puuid = data['puuid']
-    #         player_info = crud.get_player_by_id(puuid) #referenced before assignment error
-    #         return jsonify({"message": "Data received successfully ", "Puuid": puuid})
-    #     except Exception as e:
-    #         return jsonify({"error": str(e)})
-    # else:
+
     player = crud.get_player_by_id(puuid)
     matches = crud.get_match_details_by_player_id(puuid)
+    icon_link = f"http://ddragon.leagueoflegends.com/cdn/13.17.1/img/profileicon/{player.player_icon}.png"
 
-    return render_template("match_history.html", player = player, matches = matches)
+
+    return render_template("match_history.html", player = player, matches = matches, icon_link = icon_link)
 
 
 if __name__ == "__main__":

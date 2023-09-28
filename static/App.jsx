@@ -3,23 +3,18 @@ function App() {
   const [playerData, setPlayerData] = React.useState({});
   const [rankedData, setRankedData] = React.useState({});
   const [searchStatus, setSearchStatus] = React.useState();
-  // const [searchMatch, setMatchSearch] = React.useState();
 
   /* Function to fetch basic player data */
   function searchForPlayer() {
     const PROXY_URL = "/api/proxy?url=https://na1.api.riotgames.com/tft/summoner/v1/summoners/by-name/" + playerSearch;
-
-  /* function to fetch match data */
-  // function searchForPlayersMatches() {
-  //   const PROXY_URL = "/api/proxy?url=https://americas.api.riotgames.com/tft/match/v1/matches/by-puuid/" + playerData.puuid + "/ids";
-  // }
 
   function sendPlayerData(playerData) {
     const playerDetailsURL = '/player_details';
         const pData = {
           puuid: playerData.puuid,
           summonerLevel: playerData.summonerLevel,
-          name: playerData.name 
+          name: playerData.name,
+          icon: playerData.profileIconId
          };
          console.log(pData);
         fetch(playerDetailsURL, {
@@ -37,27 +32,6 @@ function App() {
               }
           })
   }
-  // function sendPuuid(playerData) {
-  //   const puuidURL = '/match_history';
-  //       const puuidData = {
-  //         puuid: playerData.puuid
-  //       };
-  //       console.log(puuidData);
-  //     fetch(puuidURL, {
-  //         method: 'POST',
-  //         body: JSON.stringify(puuidData),
-  //         headers: {
-  //           'Content-Type': 'application/json',
-  //         },
-  //     })
-  //       .then((response) => {
-  //         if (response.ok) {
-  //           console.log('puuid sent to match history page');
-  //         } else {
-  //           console.error('failed to send puuid to match history page')
-  //         }
-  //       })
-  // }
     fetch(PROXY_URL)
       .then((response) => {
         if (response.ok) {
@@ -74,28 +48,50 @@ function App() {
         setSearchStatus('Player Found');
         // could make another api call, now that you have the puuid
         sendPlayerData(data);
-        // sendPuuid(data);
       })
       .catch((error) => {
         console.error('Fetch error:', error);
         setSearchStatus('Player Not Found');
       });
   }
-  /* Use useEffect to fetch ranked data after the initial render, had problems before using useEffect. */
+  function sendRankedData(rankedData) {
+    const rankDetailsUrl = "/rank_details";
+      const rData = {
+        puuid: rankedData[0].puuid,
+        rank: rankedData[0].tier
+      };
+      fetch(rankDetailsUrl, {
+        method: 'POST',
+        body: JSON.stringify(rData),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+      .then((response) => {
+        if(response.ok) {
+          console.log('rank sent')
+        } else {
+          console.error('failed to send rank')
+        }
+      })
+  }
+  /* Use useEffect to fetch ranked data after the initial render. */
   React.useEffect(() => {
     if (playerData.id) {
       const PROXY_URL = "/api/proxy?url=https://na1.api.riotgames.com/tft/league/v1/entries/by-summoner/" + playerData.id;
-
+      
       fetch(PROXY_URL)
         .then((response) => response.json())
         .then(data => {
           console.log(data);
           setRankedData(data);
+          sendRankedData(data);
         })
         .catch(error => {
           console.error('Fetch error:', error);
         });
     }
+    
   }, [playerData.id]); // ensure the effect runs when playerData.id changes to prevent re-render issues
 
   return (
@@ -122,7 +118,7 @@ function App() {
               ></img>
             </React.Fragment>
           )}
-          {rankedData.length > 0 ? ( /* might need to add a link that passes match id's to python */
+          {rankedData.length > 0 ? (
             <p>
               Rank: {rankedData[0].tier} {rankedData[0].rank} <br></br> <a href={`/match_history/${playerData.puuid}`}>View Match History</a>
             </p>
