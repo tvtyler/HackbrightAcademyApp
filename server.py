@@ -55,25 +55,40 @@ def get_puuid():
         matches = fetch_match_id((puuid))
         matches_in_db = []
         match_details_db = []
+        character_db = []
+        match_characters_db = []
         player = crud.get_player_by_id(puuid)
-        for match in matches:
-            #get the index of the player and find data about them using that index
-            puuid_index = match["metadata"]["participants"].index(puuid)
+        try:
+            for match in matches:
+                #get the index of the player and find data about them using that index
+                puuid_index = match["metadata"]["participants"].index(puuid)
 
-            match_id = match["metadata"]["match_id"]
-            placement = match["info"]["participants"][puuid_index]["placement"]
-        
-            
-            db_match = crud.create_match(match_id)
-            match_details = crud.create_match_details(puuid, match_id, placement) #arguments?
-            match_details.players = player #unsure if this line is needed
-            matches_in_db.append(db_match)
-            match_details_db.append(match_details)
+                match_id = match["metadata"]["match_id"]
+                placement = match["info"]["participants"][puuid_index]["placement"]
 
-        model.db.session.add_all(match_details_db)
-        model.db.session.add_all(matches_in_db)
-        model.db.session.commit()
+                db_match = crud.create_match(match_id)
+                match_details = crud.create_match_details(puuid, match_id, placement) #arguments?
+                # match_details.players = player
 
+                #iterate through each unit in the match, adding to database and associating with each match_details
+                for unit in match["info"]["participants"][puuid_index]["units"]:
+                    character = crud.create_character(unit["character_id"])
+                    character_db.append(character)
+                    match_character = crud.create_match_characters(match_details.id, character.id)
+                    match_characters_db.append(match_character)
+
+
+                matches_in_db.append(db_match)
+                match_details_db.append(match_details)
+
+            model.db.session.add_all(match_details_db)
+            model.db.session.add_all(matches_in_db)
+            model.db.session.add_all(character_db)
+            model.db.session.add_all(match_characters_db)
+            model.db.session.commit()
+
+        except Exception as e:
+            return jsonify({"error": str(e)})
         return jsonify({"message": "Data received successfully"})
     except Exception as e:
         #helps for identifying what error i'm receiving
@@ -125,10 +140,11 @@ def match_history(puuid):
 
     player = crud.get_player_by_id(puuid)
     matches = crud.get_match_details_by_player_id(puuid)
+    match_characters = crud.get_match_characters_by_match_details_id(matches[0].id) #EMPTY. PICK UP HERE
     icon_link = f"http://ddragon.leagueoflegends.com/cdn/13.17.1/img/profileicon/{player.player_icon}.png"
 
 
-    return render_template("match_history.html", player = player, matches = matches, icon_link = icon_link)
+    return render_template("match_history.html", player = player, matches = matches, icon_link = icon_link, match_characters = match_characters)
 
 
 if __name__ == "__main__":

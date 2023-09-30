@@ -1,4 +1,4 @@
-from model import db, Player, Character, Item, Character_item, Match, Match_details, connect_to_db #will need to import pairings/charactertraits later
+from model import db, Player, Character, Item, Character_item, Match, Match_details, MatchCharacter, connect_to_db #will need to import pairings/charactertraits later
 
 #create operations
 
@@ -25,10 +25,23 @@ def create_match_details(player_id, match_id, placement):
     details = Match_details(
         player_id = player_id,
         match_id = match_id,
-        placement = placement,
+        placement = placement
     )
     
     return details
+
+def create_match_characters(match_detail_id, character_id):
+    match_character = MatchCharacter(
+        match_detail_id = match_detail_id,
+        character_id = character_id
+    )
+    
+    return match_character
+
+def create_character(name):
+    character = Character(character_name = name)
+    return character
+
 #will need to add the other many-to-many relationships later
 
 
@@ -49,6 +62,9 @@ def get_all_match_details():
 
 def get_match_details_by_player_id(player_id):
     return Match_details.query.filter(Match_details.player_id == player_id).all()
+
+def get_match_characters_by_match_details_id(match_detail_id):
+    return MatchCharacter.query.filter(MatchCharacter.match_detail_id == match_detail_id).all()
 
 def get_all_characters():
     return Character.query.all()

@@ -17,10 +17,28 @@ class Match_details(db.Model):
 
     match = db.relationship("Match", back_populates="match_details")
     players = db.relationship("Player", back_populates="player_details")
+    match_characters = db.relationship("MatchCharacter", back_populates="match_detail")
 
     def __repr__(self):
         return f"<match_details id={self.id} player_id={self.player_id} match_id={self.match_id}>"
     
+class MatchCharacter(db.Model):
+    """Association table to establish a many-to-many relationship between Match_details and Character"""
+
+    __tablename__ = "match_character"
+
+    match_character_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    match_detail_id = db.Column(db.Integer, db.ForeignKey("match_details.id"))
+    character_id = db.Column(db.Integer, db.ForeignKey("characters.id"))
+    num_units = db.Column(db.Integer) #unnecessary?
+    
+    match_detail = db.relationship("Match_details", back_populates="match_characters")
+    character = db.relationship("Character", back_populates="match_characters")
+
+    def __repr__(self):
+        return f"<MatchCharacter match_character_id={self.match_character_id} match_detail_id={self.match_detail_id} character_id={self.character_id} num_units={self.num_units}>"
+
+
 class Player(db.Model):
     """A player"""
 
@@ -42,7 +60,6 @@ class Match(db.Model):
 
     __tablename__ ="match"
 
-    # id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     match_id = db.Column(db.String, unique=True, primary_key=True)
 
     match_details = db.relationship("Match_details", back_populates="match")
@@ -55,11 +72,11 @@ class Character(db.Model):
 
     __tablename__ = "characters"
 
-    id = db.Column(db.Integer, autoincrement = True)
-    character_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    id = db.Column(db.Integer, autoincrement = True,  primary_key=True)
     character_name = db.Column(db.String)
     
     items = db.relationship("Item", secondary="character_item", back_populates="characters")
+    match_characters = db.relationship("MatchCharacter", back_populates="character")
 
     def __repr__(self):
         return f"<Character character_id={self.character_id} character name={self.character_name}>"
@@ -83,11 +100,9 @@ class Character_item(db.Model):
     __tablename__ = "character_item"
 
     character_item_id = db.Column(db.Integer, autoincrement = True, primary_key = True) #autoincrement?
-    character_id = db.Column(db.Integer, db.ForeignKey("characters.character_id"), nullable = False)
+    character_id = db.Column(db.Integer, db.ForeignKey("characters.id"), nullable = False)
     item_id = db.Column(db.Integer, db.ForeignKey("items.item_id"), nullable=False)
     num_items = db.Column(db.Integer)
-    play_rate = db.Column(db.Float)
-    win_rate = db.Column(db.Float)
 
     def __repr__(self):
         return f"<Character_item_id={self.character_item_id} character_id={self.character_id} item_id={self.item_id}>"
