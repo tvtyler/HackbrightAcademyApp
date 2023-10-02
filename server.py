@@ -38,7 +38,6 @@ def riot_api_proxy():
     
 @app.route('/player_details', methods = ['POST'])
 def get_puuid():
-    # #will have to add rank later through another api request in app.jsx
     try:
         data = request.get_json()
     
@@ -51,11 +50,7 @@ def get_puuid():
         model.db.session.add(player)
         model.db.session.commit()
 
-        #added match data to this post request, remember it takes a while to load
         matches = fetch_match_id((puuid))
-        matches_in_db = []
-        match_details_db = []
-        character_db = []
         match_characters_db = []
         player = crud.get_player_by_id(puuid)
         try:
@@ -67,26 +62,22 @@ def get_puuid():
                 placement = match["info"]["participants"][puuid_index]["placement"]
 
                 db_match = crud.create_match(match_id)
-                match_details = crud.create_match_details(puuid, match_id, placement) #arguments?
+                match_details = crud.create_match_details(puuid, match_id, placement)
                 # match_details.players = player
-
+                model.db.session.add(db_match)
+                model.db.session.add(match_details)
+                model.db.session.commit()
                 #iterate through each unit in the match, adding to database and associating with each match_details
                 for unit in match["info"]["participants"][puuid_index]["units"]:
                     character = crud.create_character(unit["character_id"])
-                    character_db.append(character)
+                    model.db.session.add(character)
+                    model.db.session.commit()
                     match_character = crud.create_match_characters(match_details.id, character.id)
                     match_characters_db.append(match_character)
 
-
-                matches_in_db.append(db_match)
-                match_details_db.append(match_details)
-
-            model.db.session.add_all(match_details_db)
-            model.db.session.add_all(matches_in_db)
-            model.db.session.add_all(character_db)
             model.db.session.add_all(match_characters_db)
             model.db.session.commit()
-
+            
         except Exception as e:
             return jsonify({"error": str(e)})
         return jsonify({"message": "Data received successfully"})
@@ -140,7 +131,8 @@ def match_history(puuid):
 
     player = crud.get_player_by_id(puuid)
     matches = crud.get_match_details_by_player_id(puuid)
-    match_characters = crud.get_match_characters_by_match_details_id(matches[0].id) #EMPTY. PICK UP HERE
+    match_characters = crud.get_match_characters_by_match_details_id(matches[0].id) #will need to iterate through later for each match
+
     icon_link = f"http://ddragon.leagueoflegends.com/cdn/13.17.1/img/profileicon/{player.player_icon}.png"
 
 
