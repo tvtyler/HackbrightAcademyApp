@@ -17,6 +17,11 @@
     <li>{{ character.character.character_name }}</li>
     {% endfor %}
     
+    {% for item in character_items %}
+        {% for i in item %}
+        <li>{{ i.item.item_name }}</li>
+        {% endfor %}
+    {% endfor %}
     <script crossorigin src="https://unpkg.com/react@16/umd/react.development.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
     <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.26.0/babel.js"></script>

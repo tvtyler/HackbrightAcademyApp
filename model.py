@@ -30,14 +30,25 @@ class MatchCharacter(db.Model):
     match_character_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     match_detail_id = db.Column(db.Integer, db.ForeignKey("match_details.id"))
     character_id = db.Column(db.Integer, db.ForeignKey("characters.id"))
-    num_units = db.Column(db.Integer) #unnecessary?
     
     match_detail = db.relationship("Match_details", back_populates="match_characters")
     character = db.relationship("Character", back_populates="match_characters")
+    character_item = db.relationship("Character_item", back_populates="match_characters")
 
     def __repr__(self):
-        return f"<MatchCharacter match_character_id={self.match_character_id} match_detail_id={self.match_detail_id} character_id={self.character_id} num_units={self.num_units}>"
+        return f"<MatchCharacter match_character_id={self.match_character_id} match_detail_id={self.match_detail_id} character_id={self.character_id}"
 
+class Character_item(db.Model):
+    """Association table to establish a many-to-many relationship between MatchCharacter and Item"""
+
+    __tablename__ = "character_items"
+
+    id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    item_id = db.Column(db.Integer, db.ForeignKey("items.item_id"))
+    match_character_id = db.Column(db.Integer, db.ForeignKey("match_character.match_character_id"))
+
+    match_characters = db.relationship("MatchCharacter", back_populates="character_item")
+    item = db.relationship("Item", back_populates="character_item")
 
 class Player(db.Model):
     """A player"""
@@ -75,7 +86,6 @@ class Character(db.Model):
     id = db.Column(db.Integer, autoincrement = True,  primary_key=True)
     character_name = db.Column(db.String)
     
-    items = db.relationship("Item", secondary="character_item", back_populates="characters")
     match_characters = db.relationship("MatchCharacter", back_populates="character")
 
     def __repr__(self):
@@ -88,24 +98,11 @@ class Item(db.Model):
     item_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     item_name = db.Column(db.String)
     
-    characters = db.relationship("Character", secondary="character_item", back_populates="items")
-
+    character_item = db.relationship("Character_item", back_populates="item")
 
     def __repr__(self):
         return f"<Item item_id={self.item_id} item name={self.item_name}>"
 
-class Character_item(db.Model):
-    """Association table to establish a many-to-many relationship between Character and Item"""
-
-    __tablename__ = "character_item"
-
-    character_item_id = db.Column(db.Integer, autoincrement = True, primary_key = True) #autoincrement?
-    character_id = db.Column(db.Integer, db.ForeignKey("characters.id"), nullable = False)
-    item_id = db.Column(db.Integer, db.ForeignKey("items.item_id"), nullable=False)
-    num_items = db.Column(db.Integer)
-
-    def __repr__(self):
-        return f"<Character_item_id={self.character_item_id} character_id={self.character_id} item_id={self.item_id}>"
 
 def connect_to_db(flask_app, db_uri="postgresql:///Teamfight_Tactics", echo=True):
     flask_app.config["SQLALCHEMY_DATABASE_URI"] = db_uri

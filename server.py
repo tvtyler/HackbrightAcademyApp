@@ -73,11 +73,20 @@ def get_puuid():
                     model.db.session.add(character)
                     model.db.session.commit()
                     match_character = crud.create_match_characters(match_details.id, character.id)
-                    match_characters_db.append(match_character)
+                    model.db.session.add(match_character)
+                    model.db.session.commit()
+                    if unit["itemNames"] != []:
+                        for i in unit["itemNames"]:
+                             #need to store in DB
+                            item = crud.create_item(i)
+                            print(item.item_name)
+                            model.db.session.add(item)
+                            model.db.session.commit()
+                            character_item = crud.create_character_item(match_character.match_character_id, item.item_id)
+                            model.db.session.add(character_item)
+                            model.db.session.commit()
 
-            model.db.session.add_all(match_characters_db)
-            model.db.session.commit()
-            
+            print("ID CHECK:", character_item.item_id, " ", character_item.match_character_id)
         except Exception as e:
             return jsonify({"error": str(e)})
         return jsonify({"message": "Data received successfully"})
@@ -132,11 +141,17 @@ def match_history(puuid):
     player = crud.get_player_by_id(puuid)
     matches = crud.get_match_details_by_player_id(puuid)
     match_characters = crud.get_match_characters_by_match_details_id(matches[0].id) #will need to iterate through later for each match
-
+    character_items = []
+    for character in match_characters:
+        items = crud.get_character_items_by_match_character_id(character.match_character_id)
+        if items != []:
+            character_items.append(items)
+    if character_items == []:
+        print("LIST IS EMPTY DUUUUUUUUDE")
     icon_link = f"http://ddragon.leagueoflegends.com/cdn/13.17.1/img/profileicon/{player.player_icon}.png"
 
 
-    return render_template("match_history.html", player = player, matches = matches, icon_link = icon_link, match_characters = match_characters)
+    return render_template("match_history.html", player = player, matches = matches, icon_link = icon_link, match_characters = match_characters, character_items = character_items)
 
 
 if __name__ == "__main__":

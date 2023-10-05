@@ -1,4 +1,4 @@
-from model import db, Player, Character, Item, Character_item, Match, Match_details, MatchCharacter, connect_to_db #will need to import pairings/charactertraits later
+from model import db, Player, Character, Item, Character_item, Match, Match_details, MatchCharacter, Character_item, connect_to_db #will need to import pairings/charactertraits later
 
 #create operations
 
@@ -21,6 +21,11 @@ def create_match(match_id):
 
     return match
 
+def create_item(item_name):
+    item = Item(item_name = item_name)
+
+    return item
+
 def create_match_details(player_id, match_id, placement):
     details = Match_details(
         player_id = player_id,
@@ -40,11 +45,16 @@ def create_match_characters(match_detail_id, character_id):
 
 def create_character(name):
     character = Character(character_name = name)
+
     return character
 
-#will need to add the other many-to-many relationships later
+def create_character_item(match_character_id, item_id):
+    character_item = Character_item(
+        match_character_id = match_character_id,
+        item_id = item_id
+    )
 
-
+    return character_item
 
 #read operations
 
@@ -78,11 +88,8 @@ def get_all_items():
 def get_item_by_id(item_id):
     return Item.query.get(item_id)
 
-def get_items_for_character(character_id):
-    return db.session.query(Character_item).filter_by(character_id=character_id).all()
-
-def get_characters_for_item(item_id):
-    return db.session.query(Character_item).filter_by(item_id=item_id).all()
+def get_character_items_by_match_character_id(match_character_id):
+    return Character_item.query.filter(Character_item.match_character_id == match_character_id).all()
 
 
 #MIGHT NEED UPDATE/DELETE OPERATIONS LATER
