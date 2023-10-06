@@ -51,7 +51,6 @@ def get_puuid():
         model.db.session.commit()
 
         matches = fetch_match_id((puuid))
-        match_characters_db = []
         player = crud.get_player_by_id(puuid)
         try:
             for match in matches:
@@ -140,18 +139,20 @@ def match_history(puuid):
 
     player = crud.get_player_by_id(puuid)
     matches = crud.get_match_details_by_player_id(puuid)
-    match_characters = crud.get_match_characters_by_match_details_id(matches[0].id) #will need to iterate through later for each match
+    match_character_list = []
+    for match in matches:
+        match_characters = crud.get_match_characters_by_match_details_id(match.id)
+        for match_character in match_characters:
+            match_character_list.append(match_character)
     character_items = []
-    for character in match_characters:
+    for character in match_character_list:
         items = crud.get_character_items_by_match_character_id(character.match_character_id)
         if items != []:
             character_items.append(items)
-    if character_items == []:
-        print("LIST IS EMPTY DUUUUUUUUDE")
     icon_link = f"http://ddragon.leagueoflegends.com/cdn/13.17.1/img/profileicon/{player.player_icon}.png"
 
 
-    return render_template("match_history.html", player = player, matches = matches, icon_link = icon_link, match_characters = match_characters, character_items = character_items)
+    return render_template("match_history.html", player = player, matches = matches, icon_link = icon_link, match_character_list = match_character_list, character_items = character_items)
 
 
 if __name__ == "__main__":

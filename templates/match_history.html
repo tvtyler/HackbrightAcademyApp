@@ -10,18 +10,29 @@
     <p><img src = "{{ icon_link }}" width = "100" height = "100" /> </p>
     <p><img src="/static/rank_icons/{{player.player_rank}}.png" width="100" height="100" /></p>
     {% for match in matches %}
-    <li>{{ match.placement }}</li>
+    <li>Placement in match {{ loop.index }}: {{ match.placement }}</li>
     {% endfor %}
+    <br>
 
-    {% for character in match_characters %}
-    <li>{{ character.character.character_name }}</li>
+    {% for match in matches %}
+    <div>Characters in match {{ loop.index }}:</div>
+    <br>
+    {% for match_character in match_character_list %}
+        <li>{{ match_character.character.character_name }}</li>
+            <ul>
+                {% for item in character_items %}
+                    {% for i in item %}
+                        {% if match_character.match_character_id == i.match_character_id %}
+                            <li>{{ i.item.item_name }}</li>
+                        {% endif %}
+                    {% endfor %}
+                {% endfor %}
+            </ul>
     {% endfor %}
+{% endfor %}
+
+
     
-    {% for item in character_items %}
-        {% for i in item %}
-        <li>{{ i.item.item_name }}</li>
-        {% endfor %}
-    {% endfor %}
     <script crossorigin src="https://unpkg.com/react@16/umd/react.development.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
     <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.26.0/babel.js"></script>
