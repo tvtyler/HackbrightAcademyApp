@@ -96,38 +96,63 @@ function App() {
 
   return (
     <div className="PlayerSearch">
-      <div className="container">
-        <h1>Teamfight Tactics Player Search</h1>
-        <input type="text" onChange={e => setPlayerSearch(e.target.value)}></input>
-        <button onClick={searchForPlayer}>View Player</button>
+      <div className="container" style={{ textAlign: 'center', padding: '20px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <h1 style={{ fontSize: '24px' }}>Teamfight Tactics Player Search</h1>
+        <input
+          type="text"
+          onChange={(e) => setPlayerSearch(e.target.value)}
+          style={{
+            width: '100%',
+            maxWidth: '300px',
+            padding: '10px',
+            marginBottom: '10px',
+          }}
+        />
+        <button
+          onClick={searchForPlayer}
+          style={{
+            padding: '10px 20px',
+            backgroundColor: '#007bff',
+            color: '#fff',
+            border: 'none',
+            cursor: 'pointer',
+          }}>
+          View Player
+        </button>
       </div>
       {searchStatus === 'Player Found' ? (
         <React.Fragment>
-          <p>Player Found!</p>
+          <p style={{ fontSize: '24px', textAlign: 'center' }}>Player Found!</p>
           {playerData && (
             <React.Fragment>
-              <p>Summoner level {playerData.summonerLevel}</p>
-              <img
-                width="100"
-                height="100"
-                src={
-                  'http://ddragon.leagueoflegends.com/cdn/13.17.1/img/profileicon/' +
-                  playerData.profileIconId +
-                  '.png'
-                }
-              ></img>
+              <p style={{ fontSize: '24px', textAlign: 'center' }}>Summoner level {playerData.summonerLevel}</p>
+              <div style={{ textAlign: 'center' }}>
+                <img
+                  width="100"
+                  height="100"
+                  src={
+                    'http://ddragon.leagueoflegends.com/cdn/13.17.1/img/profileicon/' +
+                    playerData.profileIconId +
+                    '.png'
+                  }
+                  style={{ borderRadius: '50%', margin: '0 auto' }}
+                />
+              </div>
             </React.Fragment>
           )}
           {rankedData.length > 0 ? (
-            <p>
-              Rank: {rankedData[0].tier} {rankedData[0].rank} <br></br> <a href={`/match_history/${playerData.puuid}`}>View Match History</a>
+            <p style={{ fontSize: '24px', textAlign: 'center' }}>
+              Rank: {rankedData[0].tier} {rankedData[0].rank} <br />
+              <a href={`/match_history/${playerData.puuid}`} style={{ textDecoration: 'none', color: '#007bff' }}>
+                View Match History
+              </a>
             </p>
           ) : (
-            <p>This player is unranked.</p>
+            <p style={{ fontSize: '24px', textAlign: 'center' }}>This player is unranked.</p>
           )}
         </React.Fragment>
       ) : searchStatus === 'Player Not Found' ? (
-        <p>Player Not Found!</p>
+        <p style={{ fontSize: '24px', textAlign: 'center' }}>Player Not Found!</p>
       ) : null}
     </div>
   );

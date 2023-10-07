@@ -1,6 +1,6 @@
 """Server for Teamfight Tactics app."""
 import os
-from flask import (Flask, render_template, request, jsonify)
+from flask import (Flask, render_template, request, jsonify, redirect)
 from jinja2 import StrictUndefined
 import crud, requests
 from datetime import datetime
@@ -66,7 +66,7 @@ def get_puuid():
                 placement = match["info"]["participants"][puuid_index]["placement"]
 
                 db_match = crud.create_match(match_id)
-                
+
                 match_details = crud.create_match_details(puuid, match_id, placement)
 
                 #Had issues when trying to commit everything at once, need to commit one at a time.
@@ -147,6 +147,8 @@ def match_history(puuid):
     """show match history for that specific player"""
 
     player = crud.get_player_by_id(puuid)
+    if player == None:
+        return redirect("/")
     matches = crud.get_match_details_by_player_id(puuid)
     match_character_list = []
     for match in matches:

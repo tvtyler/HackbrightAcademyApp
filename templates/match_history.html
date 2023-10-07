@@ -17,26 +17,21 @@
                 <h2>Match {{ loop.index }}</h2>
                 <p>Placement: {{ match.placement }}</p>
 
-                <div>Characters:</div>
-                <ul>
+                <div>Characters Played:</div>
                     {% for match_character in match_character_list %}
                         {% if match_character.match_detail.match_id == match.match_id %}
-                            <li>
-                                <div>{{match_character.character.character_name}}</div>
-                                <img src="https://ddragon.leagueoflegends.com/cdn/13.19.1/img/tft-champion/{{ image_dict[match_character.character.character_id] }}" height="50" width="70" />
-                                <ul>
-                                    {% for item in character_items %}
-                                        {% for i in item %}
-                                            {% if match_character.match_character_id == i.match_character_id %}
-                                                <li>{{ i.item.item_short_name }}</li>
-                                            {% endif %}
-                                        {% endfor %}
+                            <div>{{match_character.character.character_name}}</div>
+                            <img src="https://ddragon.leagueoflegends.com/cdn/13.19.1/img/tft-champion/{{ image_dict[match_character.character.character_id] }}" height="50" width="70" />
+                                {% for item in character_items %}
+                                    {% for i in item %}
+                                        {% if match_character.match_character_id == i.match_character_id and i.item.item_short_name != "" %}
+                                            <div> {{ i.item.item_short_name }} </div>
+                                        {% endif %}
                                     {% endfor %}
-                                </ul>
-                            </li>
+                                {% endfor %}
                         {% endif %}
                     {% endfor %}
-                </ul>
+                
             </div>
         {% endfor %}
     </div>
