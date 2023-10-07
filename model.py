@@ -84,6 +84,7 @@ class Character(db.Model):
     __tablename__ = "characters"
 
     id = db.Column(db.Integer, autoincrement = True,  primary_key=True)
+    character_id = db.Column(db.String)
     character_name = db.Column(db.String)
     
     match_characters = db.relationship("MatchCharacter", back_populates="character")
@@ -97,6 +98,7 @@ class Item(db.Model):
 
     item_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     item_name = db.Column(db.String)
+    item_short_name = db.Column(db.String)
     
     character_item = db.relationship("Character_item", back_populates="item")
 

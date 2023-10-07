@@ -4,32 +4,42 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Match History</title>
+    <link rel="stylesheet" href="/static/styles.css" />
 </head>
 <body>
     <h1>{{  player.player_name }}'s Match History </h1>
     <p><img src = "{{ icon_link }}" width = "100" height = "100" /> </p>
     <p><img src="/static/rank_icons/{{player.player_rank}}.png" width="100" height="100" /></p>
-    {% for match in matches %}
-    <li>Placement in match {{ loop.index }}: {{ match.placement }}</li>
-    {% endfor %}
-    <br>
 
-    {% for match in matches %}
-    <div>Characters in match {{ loop.index }}:</div>
-    <br>
-    {% for match_character in match_character_list %}
-        <li>{{ match_character.character.character_name }}</li>
-            <ul>
-                {% for item in character_items %}
-                    {% for i in item %}
-                        {% if match_character.match_character_id == i.match_character_id %}
-                            <li>{{ i.item.item_name }}</li>
+    <div class="match-container">
+        {% for match in matches %}
+            <div class="match-details">
+                <h2>Match {{ loop.index }}</h2>
+                <p>Placement: {{ match.placement }}</p>
+
+                <div>Characters:</div>
+                <ul>
+                    {% for match_character in match_character_list %}
+                        {% if match_character.match_detail.match_id == match.match_id %}
+                            <li>
+                                <div>{{match_character.character.character_name}}</div>
+                                <img src="https://ddragon.leagueoflegends.com/cdn/13.19.1/img/tft-champion/{{ image_dict[match_character.character.character_id] }}" height="50" width="70" />
+                                <ul>
+                                    {% for item in character_items %}
+                                        {% for i in item %}
+                                            {% if match_character.match_character_id == i.match_character_id %}
+                                                <li>{{ i.item.item_short_name }}</li>
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% endfor %}
+                                </ul>
+                            </li>
                         {% endif %}
                     {% endfor %}
-                {% endfor %}
-            </ul>
-    {% endfor %}
-{% endfor %}
+                </ul>
+            </div>
+        {% endfor %}
+    </div>
 
 
     

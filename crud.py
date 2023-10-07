@@ -1,4 +1,4 @@
-from model import db, Player, Character, Item, Character_item, Match, Match_details, MatchCharacter, Character_item, connect_to_db #will need to import pairings/charactertraits later
+from model import * #will need to import pairings/charactertraits later
 
 #create operations
 
@@ -43,8 +43,8 @@ def create_match_characters(match_detail_id, character_id):
     
     return match_character
 
-def create_character(name):
-    character = Character(character_name = name)
+def create_character(character_id):
+    character = Character(character_id = character_id)
 
     return character
 
