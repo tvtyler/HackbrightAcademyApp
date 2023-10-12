@@ -122,10 +122,10 @@ function App() {
       </div>
       {searchStatus === 'Player Found' ? (
         <React.Fragment>
-          <p style={{ fontSize: '24px', textAlign: 'center' }}>Player Found!</p>
+          <p style={{ fontSize: '24px', textAlign: 'center' }}><b>Player Found!</b></p>
           {playerData && (
             <React.Fragment>
-              <p style={{ fontSize: '24px', textAlign: 'center' }}>Summoner level {playerData.summonerLevel}</p>
+              <p style={{ fontSize: '24px', textAlign: 'center' }}>Summoner level: {playerData.summonerLevel}</p>
               <div style={{ textAlign: 'center' }}>
                 <img
                   width="100"

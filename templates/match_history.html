@@ -6,36 +6,48 @@
     <title>Match History</title>
     <link rel="stylesheet" href="/static/styles.css" />
 </head>
-<body>
-    <h1>{{  player.player_name }}'s Match History </h1>
-    <p><img src = "{{ icon_link }}" width = "100" height = "100" /> </p>
-    <p><img src="/static/rank_icons/{{player.player_rank}}.png" width="100" height="100" /></p>
+<body class="background">
+    <h1 class="intro-container">{{ player.player_name }}'s Match History</h1>
+    <div class="top-container">
+        <div><img src="/static/images/mirror_pengu.png" width="120" height="120" /></div>
+        <div class="middle-container">
+            <div class="icon-container"><img src="{{ icon_link }}" width="100" height="100" /></div>
+            <div class="rank-container"><img src="/static/rank_icons/{{player.player_rank}}.png" width="120" height="120" /></div>
+        </div>
+        <div><img src="/static/images/pengu.png" width="120" height="120" /></div>
+    </div>
+    
 
     <div class="match-container">
         {% for match in matches %}
             <div class="match-details">
                 <h2>Match {{ loop.index }}</h2>
-                <p>Placement: {{ match.placement }}</p>
-
-                <div>Characters Played:</div>
+                <div class = "placement">Placement: {{ match.placement }}</div>
+                
+                <div>
                     {% for match_character in match_character_list %}
                         {% if match_character.match_detail.match_id == match.match_id %}
-                            <div>{{match_character.character.character_name}}</div>
-                            <img src="https://ddragon.leagueoflegends.com/cdn/13.19.1/img/tft-champion/{{ image_dict[match_character.character.character_id] }}" height="50" width="70" />
-                                {% for item in character_items %}
-                                    {% for i in item %}
-                                        {% if match_character.match_character_id == i.match_character_id and i.item.item_short_name != "" %}
-                                            <div> {{ i.item.item_short_name }} </div>
-                                        {% endif %}
+                            <div class="character-item">
+                                <div class="character-info">
+                                    <div>{{match_character.character.character_name}}</div>
+                                    <img src="https://ddragon.leagueoflegends.com/cdn/13.19.1/img/tft-champion/{{ image_dict[match_character.character.character_id] }}" height="50" width="70" />
+                                </div>
+                                <div class="item-list">
+                                    {% for item in character_items %}
+                                        {% for i in item %}
+                                            {% if match_character.match_character_id == i.match_character_id and i.item.item_short_name != "" %}
+                                                <div>{{ i.item.item_short_name }}</div>
+                                            {% endif %}
+                                        {% endfor %}
                                     {% endfor %}
-                                {% endfor %}
+                                </div>
+                            </div>
                         {% endif %}
                     {% endfor %}
-                
+                </div>
             </div>
         {% endfor %}
     </div>
-
 
     
     <script crossorigin src="https://unpkg.com/react@16/umd/react.development.js"></script>
