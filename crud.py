@@ -1,4 +1,4 @@
-from model import * #will need to import pairings/charactertraits later
+from model import *
 
 #create operations
 
