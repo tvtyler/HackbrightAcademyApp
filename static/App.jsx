@@ -8,6 +8,7 @@ function App() {
   function searchForPlayer() {
     const PROXY_URL = "/api/proxy?url=https://na1.api.riotgames.com/tft/summoner/v1/summoners/by-name/" + playerSearch;
 
+  /* function to send player data such as name and player id to backend */
   function sendPlayerData(playerData) {
     const playerDetailsURL = '/player_details';
         const pData = {
@@ -46,7 +47,6 @@ function App() {
         console.log(data);
         setPlayerData(data);
         setSearchStatus('Player Found');
-        // could make another api call, now that you have the puuid
         sendPlayerData(data);
       })
       .catch((error) => {
@@ -54,6 +54,7 @@ function App() {
         setSearchStatus('Player Not Found');
       });
   }
+  /* function to send a players rank to backend */
   function sendRankedData(rankedData) {
     const rankDetailsUrl = "/rank_details";
       const rData = {
@@ -94,6 +95,7 @@ function App() {
     
   }, [playerData.id]); // ensure the effect runs when playerData.id changes to prevent re-render issues
 
+  /* display search form and basic player data  */
   return (
     <div className="PlayerSearch">
       <div className="container" style={{ textAlign: 'center', padding: '20px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>

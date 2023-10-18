@@ -12,7 +12,7 @@ class Match_details(db.Model):
 
     id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     player_id = db.Column(db.String, db.ForeignKey('players.player_id'))
-    match_id = db.Column(db.String, db.ForeignKey('match.match_id')) #unique? #store match IDs as strings
+    match_id = db.Column(db.String, db.ForeignKey('match.match_id'))
     placement = db.Column(db.Integer)
 
     match = db.relationship("Match", back_populates="match_details")
@@ -23,7 +23,7 @@ class Match_details(db.Model):
         return f"<match_details id={self.id} player_id={self.player_id} match_id={self.match_id}>"
     
 class MatchCharacter(db.Model):
-    """Association table to establish a many-to-many relationship between Match_details and Character"""
+    """Association table to establish a many-to-many relationship between Match and Character"""
 
     __tablename__ = "match_character"
 
@@ -39,7 +39,7 @@ class MatchCharacter(db.Model):
         return f"<MatchCharacter match_character_id={self.match_character_id} match_detail_id={self.match_detail_id} character_id={self.character_id}"
 
 class Character_item(db.Model):
-    """Association table to establish a many-to-many relationship between MatchCharacter and Item"""
+    """Association table to establish a many-to-many relationship between Character and Item"""
 
     __tablename__ = "character_items"
 
@@ -55,7 +55,7 @@ class Player(db.Model):
 
     __tablename__ = "players"
 
-    player_id = db.Column(db.String, unique=True, primary_key=True) #puuid
+    player_id = db.Column(db.String, unique=True, primary_key=True) #puuid from api
     player_name = db.Column(db.String)
     player_level = db.Column(db.Integer)
     player_icon = db.Column(db.Integer)
@@ -93,7 +93,8 @@ class Character(db.Model):
         return f"<Character character_id={self.character_id} character name={self.character_name}>"
     
 class Item(db.Model):
-
+    """An item"""
+    
     __tablename__ = "items"
 
     item_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
