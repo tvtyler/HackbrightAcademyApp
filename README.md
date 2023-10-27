@@ -1,5 +1,5 @@
 # HackbrightAcademyApp
-My app for finding players on Teamfight Tactics using the Riot Games API.
+My app for displaying player data from Teamfight Tactics using the Riot Games API.
 
 Cloning the Repository:
 Open terminal or command prompt.
