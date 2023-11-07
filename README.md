@@ -1,5 +1,5 @@
 # HackbrightAcademyApp
-My app for displaying player data from Teamfight Tactics using the Riot Games API.
+Teamfight Tactics is a popular competitive video game made by Riot Games. This is my app for displaying player data from Teamfight Tactics using the Riot Games API.
 
 Cloning the Repository:
 Open terminal or command prompt.
